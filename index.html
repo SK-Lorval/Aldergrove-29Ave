@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aldergrove Infrastructure Presentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 60px 80px;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .slide-header {
+            margin-bottom: 40px;
+        }
+
+        .slide-number {
+            font-size: 14px;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            opacity: 0.7;
+        }
+
+        .slide-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 10px;
+            line-height: 1.2;
+        }
+
+        .slide-subtitle {
+            font-size: 20px;
+            color: #888;
+            font-weight: 400;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .title-slide {
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .title-slide .slide-title {
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+
+        .title-slide .slide-subtitle {
+            font-size: 28px;
+            margin-bottom: 40px;
+        }
+
+        .title-slide .project-info {
+            font-size: 18px;
+            color: #aaa;
+            line-height: 1.8;
+        }
+
+        .gantt-slide {
+            padding: 40px 60px;
+        }
+
+        .gantt-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .gantt-chart {
+            width: 100%;
+        }
+
+        .gantt-header {
+            display: grid;
+            background: rgba(0, 0, 0, 0.5);
+            border-bottom: 2px solid #0f3460;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .gantt-header-cell {
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #00d4ff;
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .gantt-row {
+            display: grid;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            min-height: 45px;
+            align-items: center;
+        }
+
+        .gantt-label {
+            padding: 10px;
+            font-size: 12px;
+            font-weight: 500;
+            border-right: 1px solid rgba(0, 212, 255, 0.2);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .gantt-timeline {
+            display: grid;
+            position: relative;
+        }
+
+        .gantt-bar {
+            background: linear-gradient(135deg, var(--color) 0%, var(--color-dark) 100%);
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 10px;
+            font-weight: 600;
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        .legend {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .legend-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .phase-detail-slide .phase-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .info-section {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 30px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+        }
+
+        .info-section h3 {
+            color: #00d4ff;
+            font-size: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 212, 255, 0.3);
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 15px;
+        }
+
+        .info-label {
+            color: #aaa;
+            font-weight: 500;
+        }
+
+        .info-value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .scope-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .scope-list li {
+            padding: 10px 0 10px 30px;
+            position: relative;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .scope-list li:before {
+            content: "▸";
+            position: absolute;
+            left: 0;
+            color: #00d4ff;
+            font-size: 18px;
+        }
+
+        .site-plan-slide .plan-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            position: relative;
+        }
+
+        .plan-placeholder {
+            text-align: center;
+            color: #888;
+        }
+
+        .plan-placeholder svg {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .site-plan-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
+        .hotspot-overlay {
+            position: absolute;
+            border: 3px solid;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(2px);
+        }
+
+        .hotspot-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 0 8px rgba(0, 0, 0, 0.9);
+            padding: 6px 12px;
+            background: rgba(0, 0, 0, 0.6);
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-btn:hover {
+            background: #00d4ff;
+            color: #1a1a2e;
+            transform: scale(1.1);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            position: fixed;
+            bottom: 30px;
+            left: 30px;
+            font-size: 16px;
+            color: #00d4ff;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+        }
+
+        .color-developer { --color: #00c853; --color-dark: #00a044; }
+        .color-township { --color: #2196f3; --color-dark: #1976d2; }
+        .color-moti { --color: #ff9800; --color-dark: #f57c00; }
+        .color-shared { --color: #ffd600; --color-dark: #ffc400; }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+        }
+
+        .summary-card {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            transition: all 0.3s;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-5px);
+            border-color: #00d4ff;
+            box-shadow: 0 10px 30px rgba(0, 212, 255, 0.3);
+        }
+
+        .summary-card h3 {
+            color: #00d4ff;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .summary-card .count {
+            font-size: 36px;
+            font-weight: 700;
+            color: #00ff88;
+            margin-bottom: 10px;
+        }
+
+        .summary-card .description {
+            color: #aaa;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .upload-overlay {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 2000;
+        }
+
+        .upload-btn {
+            background: rgba(0, 212, 255, 0.2);
+            border: 2px solid #00d4ff;
+            color: #00d4ff;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+
+        .upload-btn:hover {
+            background: #00d4ff;
+            color: #1a1a2e;
+        }
+
+        .file-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="upload-overlay">
+        <label class="upload-btn">
+            📁 Upload Site Plan
+            <input type="file" class="file-input" id="imageUpload" accept="image/*">
+        </label>
+    </div>
+
+    <div class="presentation-container">
+        <!-- Slide 1: Title -->
+        <div class="slide active title-slide" data-slide="1">
+            <div class="slide-content">
+                <div class="slide-title">🏗️ Aldergrove Infrastructure Project</div>
+                <div class="slide-subtitle">Phased Development Plan 2025-2026</div>
+                <div class="project-info">
+                    <div>29 Avenue & 262-264 Street Corridor</div>
+                    <div style="margin-top: 10px;">Multi-Party Coordination: Lorval | Beedie | Township of Langley | MOTI</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2: Project Overview -->
+        <div class="slide" data-slide="2">
+            <div class="slide-header">
+                <div class="slide-number">Slide 2 of 13</div>
+                <div class="slide-title">Project Overview</div>
+                <div class="slide-subtitle">Executive Summary</div>
+            </div>
+            <div class="slide-content">
+                <div class="summary-grid">
+                    <div class="summary-card">
+                        <h3>📊 Total Phases</h3>
+                        <div class="count">9</div>
+                        <div class="description">Coordinated infrastructure phases across multiple developers and agencies</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>📅 Project Duration</h3>
+                        <div class="count">18</div>
+                        <div class="description">Months from January 2025 through June 2026</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>🏢 Stakeholders</h3>
+                        <div class="count">4</div>
+                        <div class="description">Lorval Development, Beedie, Township of Langley, BC MOTI</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>🚧 Scope Areas</h3>
+                        <div class="count">5</div>
+                        <div class="description">Roadworks, Storm, Sanitary, Watermain, Intersection Signalization</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Master Timeline -->
+        <div class="slide gantt-slide" data-slide="3">
+            <div class="slide-header">
+                <div class="slide-number">Slide 3 of 13</div>
+                <div class="slide-title">Master Timeline</div>
+                <div class="slide-subtitle">All Phases - January 2025 to June 2026</div>
+            </div>
+            <div class="legend" id="legend"></div>
+            <div class="gantt-container">
+                <div class="gantt-chart" id="ganttChart"></div>
+            </div>
+        </div>
+
+        <!-- Slide 4: Site Plan Overview -->
+        <div class="slide site-plan-slide" data-slide="4">
+            <div class="slide-header">
+                <div class="slide-number">Slide 4 of 13</div>
+                <div class="slide-title">Site Plan Overview</div>
+                <div class="slide-subtitle">Project Area & Phase Locations</div>
+            </div>
+            <div class="slide-content">
+                <div class="plan-container" id="sitePlanContainer">
+                    <div class="plan-placeholder">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                            <polyline points="21 15 16 10 5 21"></polyline>
+                        </svg>
+                        <div>Upload site plan image using the button in the top-right corner</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 5: Lorval Phase 1 -->
+        <div class="slide phase-detail-slide" data-slide="5">
+            <div class="slide-header">
+                <div class="slide-number">Slide 5 of 13</div>
+                <div class="slide-title">Lorval Phase 1</div>
+                <div class="slide-subtitle">Roadworks & Initial Infrastructure</div>
+            </div>
+            <div class="slide-content">
+                <div class="phase-info">
+                    <div class="info-section">
+                        <h3>Project Details</h3>
+                        <div class="info-item">
+                            <span class="info-label">Responsible Party:</span>
+                            <span class="info-value" style="color: #00c853;">Developer</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Jan - Jun 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Duration:</span>
+                            <span class="info-value">6 months</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Location:</span>
+                            <span class="info-value">262 St & 29 Ave</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>Scope of Work</h3>
+                        <ul class="scope-list">
+                            <li>Half road (6.1m) along 262 Street</li>
+                            <li>Roadwork upgrades along 29 Avenue</li>
+                            <li>Initial sanitary infrastructure</li>
+                            <li>Storm drainage systems</li>
+                            <li>Coordination with adjacent phases</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Beedie Frontage -->
+        <div class="slide phase-detail-slide" data-slide="6">
+            <div class="slide-header">
+                <div class="slide-number">Slide 6 of 13</div>
+                <div class="slide-title">Beedie Frontage</div>
+                <div class="slide-subtitle">Developer Frontage Works</div>
+            </div>
+            <div class="slide-content">
+                <div class="phase-info">
+                    <div class="info-section">
+                        <h3>Project Details</h3>
+                        <div class="info-item">
+                            <span class="info-label">Responsible Party:</span>
+                            <span class="info-value" style="color: #00c853;">Developer</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Mar - Jul 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Duration:</span>
+                            <span class="info-value">5 months</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Location:</span>
+                            <span class="info-value">Adjacent to Lorval</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>Scope of Work</h3>
+                        <ul class="scope-list">
+                            <li>Half road (6.1m) upgrade</li>
+                            <li>Watermain construction coordination</li>
+                            <li>Frontage improvements</li>
+                            <li>Tie-in to existing infrastructure</li>
+                            <li>Site servicing preparation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 7: Township Projects -->
+        <div class="slide phase-detail-slide" data-slide="7">
+            <div class="slide-header">
+                <div class="slide-number">Slide 7 of 13</div>
+                <div class="slide-title">Township of Langley Projects</div>
+                <div class="slide-subtitle">Municipal Infrastructure Upgrades</div>
+            </div>
+            <div class="slide-content">
+                <div class="phase-info">
+                    <div class="info-section">
+                        <h3>TOL 10-24-0092</h3>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Jun - Sep 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Scope:</span>
+                            <span class="info-value">29 Ave Upgrades</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>TOL 10-24-0086</h3>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Oct 2024 - Apr 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Location:</span>
+                            <span class="info-value">26260 30A Avenue</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-section" style="margin-top: 20px;">
+                    <h3>TOL 10-24-0066 (Currently in Construction)</h3>
+                    <ul class="scope-list">
+                        <li>Half road and additional asphalt for ultimate 11m road width</li>
+                        <li>Storm drainage infrastructure</li>
+                        <li>Watermain installation at 26264 30A Avenue</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 8: MOTI Intersection -->
+        <div class="slide phase-detail-slide" data-slide="8">
+            <div class="slide-header">
+                <div class="slide-number">Slide 8 of 13</div>
+                <div class="slide-title">MOTI Intersection Project</div>
+                <div class="slide-subtitle">264 Street & 29 Avenue Signalization</div>
+            </div>
+            <div class="slide-content">
+                <div class="phase-info">
+                    <div class="info-section">
+                        <h3>Project Details</h3>
+                        <div class="info-item">
+                            <span class="info-label">Responsible Party:</span>
+                            <span class="info-value" style="color: #ff9800;">MOTI</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Jun - Oct 2025</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Duration:</span>
+                            <span class="info-value">5 months</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value">Scheduled Summer 2025</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>Scope of Work</h3>
+                        <ul class="scope-list">
+                            <li>Full signalized intersection installation</li>
+                            <li>264 Street and 29 Avenue intersection</li>
+                            <li>Roadwork upgrades including MOTI highway project</li>
+                            <li>Traffic signal equipment and infrastructure</li>
+                            <li>Coordination with adjacent development phases</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Lorval Phase 2 -->
+        <div class="slide phase-detail-slide" data-slide="9">
+            <div class="slide-header">
+                <div class="slide-number">Slide 9 of 13</div>
+                <div class="slide-title">Lorval Phase 2</div>
+                <div class="slide-subtitle">Full Frontage & Final Infrastructure</div>
+            </div>
+            <div class="slide-content">
+                <div class="phase-info">
+                    <div class="info-section">
+                        <h3>Project Details</h3>
+                        <div class="info-item">
+                            <span class="info-label">Responsible Party:</span>
+                            <span class="info-value" style="color: #00c853;">Developer</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Oct 2025 - Apr 2026</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Duration:</span>
+                            <span class="info-value">7 months</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Dependencies:</span>
+                            <span class="info-value">Phase 1 Completion</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>Scope of Work</h3>
+                        <ul class="scope-list">
+                            <li>Full road & storm upgrades on 262 Street frontage</li>
+                            <li>Complete 29 Avenue frontage improvements</li>
+                            <li>Half road upgrades on 29 Avenue</li>
+                            <li>Watermain construction</li>
+                            <li>Final sanitary infrastructure and lift station</li>
+                            <li>Coordination of all utility tie-ins</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 10: Shared Infrastructure -->
+        <div class="slide phase-detail-slide" data-slide="10">
+            <div class="slide-header">
+                <div class="slide-number">Slide 10 of 13</div>
+                <div class="slide-title">Shared Infrastructure</div>
+                <div class="slide-subtitle">Multi-Party Coordination</div>
+            </div>
+            <div class="slide-content">
+                <div class="phase-info">
+                    <div class="info-section">
+                        <h3>Watermain Phase 2</h3>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Nov 2025 - Mar 2026</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Coordination:</span>
+                            <span class="info-value">Lorval + Beedie + TOL</span>
+                        </div>
+                        <ul class="scope-list" style="margin-top: 20px;">
+                            <li>Primary watermain installation</li>
+                            <li>System tie-ins and connections</li>
+                            <li>Testing and commissioning</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h3>Final Paving & Tie-ins</h3>
+                        <div class="info-item">
+                            <span class="info-label">Timeline:</span>
+                            <span class="info-value">Apr - Jun 2026</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span class="info-value">Project Closeout Phase</span>
+                        </div>
+                        <ul class="scope-list" style="margin-top: 20px;">
+                            <li>Final asphalt paving across all phases</li>
+                            <li>Infrastructure tie-ins and connections</li>
+                            <li>Quality assurance and final inspections</li>
+                            <li>Site restoration and landscaping</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Critical Path -->
+        <div class="slide" data-slide="11">
+            <div class="slide-header">
+                <div class="slide-number">Slide 11 of 13</div>
+                <div class="slide-title">Critical Path & Dependencies</div>
+                <div class="slide-subtitle">Key Milestones & Coordination Points</div>
+            </div>
+            <div class="slide-content">
+                <div class="summary-grid">
+                    <div class="info-section">
+                        <h3>Q1-Q2 2025: Foundation Phase</h3>
+                        <ul class="scope-list">
+                            <li>Lorval Phase 1 initiates project (Jan 2025)</li>
+                            <li>TOL 10-24-0066 completes early works (Apr 2025)</li>
+                            <li>Beedie frontage progresses in parallel (Mar-Jul)</li>
+                            <li>Critical: Phase 1 completion enables Phase 2</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h3>Q3 2025: Mid-Project Surge</h3>
+                        <ul class="scope-list">
+                            <li>MOTI intersection work begins (Jun 2025)</li>
+                            <li>TOL 10-24-0092 29 Ave upgrades (Jun-Sep)</li>
+                            <li>Multiple parties active simultaneously</li>
+                            <li>Highest coordination requirements</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h3>Q4 2025 - Q1 2026: Major Build</h3>
+                        <ul class="scope-list">
+                            <li>Lorval Phase 2 full frontage (Oct 2025)</li>
+                            <li>Watermain Phase 2 installation (Nov 2025)</li>
+                            <li>MOTI intersection completes (Oct 2025)</li>
+                            <li>Infrastructure convergence period</li>
+                        </ul>
+                    </div>
+                    <div class="info-section">
+                        <h3>Q2 2026: Project Closeout</h3>
+                        <ul class="scope-list">
+                            <li>Lorval Phase 2 completion (Apr 2026)</li>
+                            <li>Final paving and tie-ins (Apr-Jun 2026)</li>
+                            <li>System testing and commissioning</li>
+                            <li>Project handover and acceptance</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 12: Coordination Strategy -->
+        <div class="slide" data-slide="12">
+            <div class="slide-header">
+                <div class="slide-number">Slide 12 of 13</div>
+                <div class="slide-title">Multi-Party Coordination</div>
+                <div class="slide-subtitle">Interface Management & Communication</div>
+            </div>
+            <div class="slide-content">
+                <div class="info-section" style="margin-bottom: 30px;">
+                    <h3>Key Coordination Points</h3>
+                    <ul class="scope-list">
+                        <li><strong>Watermain Tie-ins:</strong> Beedie and Lorval Phase 2 watermain work requires synchronized scheduling</li>
+                        <li><strong>262 Street Corridor:</strong> Sequential phasing between Lorval Phase 1, Phase 2, and TOL projects</li>
+                        <li><strong>29 Avenue Interface:</strong> Coordination between Lorval, TOL 10-24-0092, and MOTI intersection work</li>
+                        <li><strong>Sanitary System:</strong> All gravity mains, forcemains, and lift station under Lorval scope with tie-ins</li>
+                        <li><strong>Final Paving:</strong> Cannot proceed until all underground utilities are complete and tested</li>
+                    </ul>
+                </div>
+                <div class="summary-grid">
+                    <div class="info-section">
+                        <h3>🤝 Stakeholder Roles</h3>
+                        <div class="info-item">
+                            <span class="info-label">Lorval:</span>
+                            <span class="info-value">Lead Developer</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Beedie:</span>
+                            <span class="info-value">Adjacent Development</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">TOL:</span>
+                            <span class="info-value">Municipal Infrastructure</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">MOTI:</span>
+                            <span class="info-value">Provincial Highway</span>
+                        </div>
+                    </div>
+                    <div class="info-section">
+                        <h3>⚠️ Risk Mitigation</h3>
+                        <ul class="scope-list">
+                            <li>Monthly coordination meetings</li>
+                            <li>Shared project schedule updates</li>
+                            <li>Clear interface agreements</li>
+                            <li>Contingency buffers built in</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 13: Summary -->
+        <div class="slide" data-slide="13">
+            <div class="slide-header">
+                <div class="slide-number">Slide 13 of 13</div>
+                <div class="slide-title">Project Summary</div>
+                <div class="slide-subtitle">18-Month Coordinated Infrastructure Program</div>
+            </div>
+            <div class="slide-content">
+                <div class="info-section" style="margin-bottom: 30px;">
+                    <h3>✅ Key Success Factors</h3>
+                    <div class="summary-grid">
+                        <div class="scope-list">
+                            <li><strong>Phased Approach:</strong> Sequential development minimizes conflicts and ensures quality</li>
+                            <li><strong>Clear Responsibilities:</strong> Well-defined scope for each party reduces coordination overhead</li>
+                            <li><strong>Proven Timeline:</strong> Realistic durations with built-in buffers for weather and approvals</li>
+                        </div>
+                        <div class="scope-list">
+                            <li><strong>Infrastructure Integration:</strong> Comprehensive utility planning ensures seamless connectivity</li>
+                            <li><strong>Multi-Party Buy-in:</strong> All stakeholders aligned on schedule and deliverables</li>
+                            <li><strong>Quality Focus:</strong> Final paving phase ensures premium finished product</li>
+                        </div>
+                    </div>
+                </div>
+                <div class="info-section">
+                    <h3>📋 Next Steps</h3>
+                    <ul class="scope-list">
+                        <li>Finalize interface agreements between all parties</li>
+                        <li>Confirm MOTI intersection construction schedule for Summer 2025</li>
+                        <li>Establish monthly coordination meetings starting Q4 2024</li>
+                        <li>Begin detailed design and permitting for Lorval Phase 1</li>
+                        <li>Set up shared project tracking system for real-time updates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide-counter" id="slideCounter">Slide 1 of 13</div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prevBtn" onclick="previousSlide()">◀</button>
+        <button class="nav-btn" id="nextBtn" onclick="nextSlide()">▶</button>
+    </div>
+
+    <script>
+        // Project data
+        const projects = [
+            { id: 'lorval-ph1', name: 'Lorval Phase 1 - Roadworks', party: 'Developer', start: '2025-01', end: '2025-06' },
+            { id: 'beedie', name: 'Beedie Frontage', party: 'Developer', start: '2025-03', end: '2025-07' },
+            { id: 'tol-0092', name: 'Township 10-24-0092 - 29 Ave Upgrades', party: 'Township', start: '2025-06', end: '2025-09' },
+            { id: 'tol-0086', name: 'Township 10-24-0086 - 26260/30A Road', party: 'Township', start: '2024-10', end: '2025-04' },
+            { id: 'tol-0066', name: 'Township 10-24-0066 - 26264/30A Upgrades', party: 'Township', start: '2025-02', end: '2025-07' },
+            { id: 'moti', name: 'MOTI Intersection (264 St & 29 Ave)', party: 'MOTI', start: '2025-06', end: '2025-10' },
+            { id: 'lorval-ph2', name: 'Lorval Phase 2 - Full Frontage', party: 'Developer', start: '2025-10', end: '2026-04' },
+            { id: 'watermain', name: 'Watermain Phase 2', party: 'Shared', start: '2025-11', end: '2026-03' },
+            { id: 'final', name: 'Final Paving and Tie-ins', party: 'Shared', start: '2026-04', end: '2026-06' }
+        ];
+
+        const parties = {
+            'Developer': { color: '#00c853', colorDark: '#00a044' },
+            'Township': { color: '#2196f3', colorDark: '#1976d2' },
+            'MOTI': { color: '#ff9800', colorDark: '#f57c00' },
+            'Shared': { color: '#ffd600', colorDark: '#ffc400' }
+        };
+
+        let currentSlide = 1;
+        const totalSlides = 13;
+        let sitePlanImage = null;
+
+        // Generate timeline months
+        const startDate = new Date('2024-10-01');
+        const endDate = new Date('2026-06-30');
+        const months = [];
+        let current = new Date(startDate);
+        while (current <= endDate) {
+            months.push({
+                year: current.getFullYear(),
+                month: current.getMonth() + 1,
+                label: current.toLocaleDateString('en-US', { month: 'short', year: '2-digit' })
+            });
+            current.setMonth(current.getMonth() + 1);
+        }
+
+        function init() {
+            renderLegend();
+            renderGantt();
+            updateNavigation();
+            setupKeyboardNavigation();
+            setupImageUpload();
+        }
+
+        function renderLegend() {
+            const legend = document.getElementById('legend');
+            legend.innerHTML = Object.entries(parties).map(([party, config]) => `
+                <div class="legend-item">
+                    <div class="legend-color" style="background: ${config.color};"></div>
+                    <span><strong>${party}</strong></span>
+                </div>
+            `).join('');
+        }
+
+        function renderGantt() {
+            const gantt = document.getElementById('ganttChart');
+            const labelWidth = 280;
+            const monthWidth = 50;
+
+            // Header
+            const header = document.createElement('div');
+            header.className = 'gantt-header';
+            header.style.gridTemplateColumns = `${labelWidth}px repeat(${months.length}, ${monthWidth}px)`;
+            header.innerHTML = `
+                <div class="gantt-header-cell" style="border-left: 1px solid rgba(0, 212, 255, 0.2);">Project Phase</div>
+                ${months.map(m => `<div class="gantt-header-cell">${m.label}</div>`).join('')}
+            `;
+            gantt.appendChild(header);
+
+            // Rows
+            projects.forEach(project => {
+                const row = document.createElement('div');
+                row.className = 'gantt-row';
+                row.style.gridTemplateColumns = `${labelWidth}px repeat(${months.length}, ${monthWidth}px)`;
+
+                const label = document.createElement('div');
+                label.className = 'gantt-label';
+                label.textContent = project.name;
+                label.style.borderLeft = '1px solid rgba(0, 212, 255, 0.2)';
+                row.appendChild(label);
+
+                const timeline = document.createElement('div');
+                timeline.className = 'gantt-timeline';
+                timeline.style.gridTemplateColumns = `repeat(${months.length}, ${monthWidth}px)`;
+                timeline.style.gridColumn = `2 / ${months.length + 2}`;
+
+                const bar = createGanttBar(project);
+                timeline.appendChild(bar);
+                row.appendChild(timeline);
+
+                gantt.appendChild(row);
+            });
+        }
+
+        function createGanttBar(project) {
+            const startParts = project.start.split('-');
+            const endParts = project.end.split('-');
+            const startMonthIndex = months.findIndex(m => m.year === parseInt(startParts[0]) && m.month === parseInt(startParts[1]));
+            const endMonthIndex = months.findIndex(m => m.year === parseInt(endParts[0]) && m.month === parseInt(endParts[1]));
+
+            const bar = document.createElement('div');
+            bar.className = `gantt-bar color-${project.party.toLowerCase().replace(/\s/g, '-')}`;
+            bar.style.gridColumn = `${startMonthIndex + 1} / ${endMonthIndex + 2}`;
+            bar.style.margin = '6px 3px';
+            bar.textContent = project.name.length > 25 ? project.name.substring(0, 22) + '...' : project.name;
+
+            return bar;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                showSlide(currentSlide);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                showSlide(currentSlide);
+            }
+        }
+
+        function showSlide(slideNumber) {
+            document.querySelectorAll('.slide').forEach(slide => {
+                slide.classList.remove('active');
+            });
+            
+            const targetSlide = document.querySelector(`.slide[data-slide="${slideNumber}"]`);
+            if (targetSlide) {
+                targetSlide.classList.add('active');
+            }
+
+            updateNavigation();
+            updateSlideCounter();
+        }
+
+        function updateNavigation() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentSlide === 1;
+            nextBtn.disabled = currentSlide === totalSlides;
+        }
+
+        function updateSlideCounter() {
+            document.getElementById('slideCounter').textContent = `Slide ${currentSlide} of ${totalSlides}`;
+        }
+
+        function setupKeyboardNavigation() {
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                    nextSlide();
+                } else if (e.key === 'ArrowLeft') {
+                    e.preventDefault();
+                    previousSlide();
+                } else if (e.key === 'Home') {
+                    e.preventDefault();
+                    currentSlide = 1;
+                    showSlide(currentSlide);
+                } else if (e.key === 'End') {
+                    e.preventDefault();
+                    currentSlide = totalSlides;
+                    showSlide(currentSlide);
+                }
+            });
+        }
+
+        function setupImageUpload() {
+            document.getElementById('imageUpload').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        sitePlanImage = event.target.result;
+                        updateSitePlan();
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
+        function updateSitePlan() {
+            const container = document.getElementById('sitePlanContainer');
+            if (sitePlanImage) {
+                container.innerHTML = `<img src="${sitePlanImage}" class="site-plan-image" alt="Site Plan">`;
+            }
+        }
+
+        // Initialize presentation
+        init();
+    </script>
+</body>
+</html>
